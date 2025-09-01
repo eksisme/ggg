@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Helios Style Web Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #171a21;
+      color: #fff;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: 8vh auto 0 auto;
+      background: #23263a;
+      border-radius: 18px;
+      box-shadow: 0 2px 30px #0008;
+      padding: 2.5em 2em 2em 2em;
+      text-align: center;
+    }
+    h1 {
+      letter-spacing: 0.04em;
+      font-size: 2.2em;
+      margin-bottom: 0.5em;
+      color: #6dfcfc;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-weight: 700;
+    }
+    .bar-wrap {
+      display: flex;
+      align-items: center;
+      background: #181b2a;
+      border-radius: 10px;
+      padding: 0.1em 0.4em 0.1em 0.9em;
+      margin-bottom: 1.4em;
+      border: 1.5px solid #2f3b50;
+      box-shadow: 0 2px 8px #0002;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 1em 0.8em;
+      font-size: 1.1em;
+      border: none;
+      background: transparent;
+      color: #fff;
+      outline: none;
+      font-family: inherit;
+    }
+    input[type="text"]::placeholder {
+      color: #8aaad1;
+      opacity: 0.72;
+    }
+    button {
+      padding: 0.6em 1.5em;
+      font-size: 1em;
+      background: #6dfcfc;
+      color: #23263a;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 0.6em;
+      transition: background 0.18s;
+    }
+    button:hover {
+      background: #43c7c7;
+    }
+    .tip {
+      margin-top: 1.3em;
+      font-size: 1em;
+      color: #92b2d4;
+    }
+    .iframe-wrap {
+      margin-top: 2.4em;
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      min-height: 360px;
+      background: #171a21;
+      border: 1.5px solid #2f3b50;
+      box-shadow: 0 4px 18px #0004;
+    }
+    iframe {
+      width: 100%;
+      min-height: 380px;
+      border: none;
+      background: #fff;
+    }
+    @media (max-width: 700px) {
+      .container { max-width: 97vw; padding: 1.2em 0.2em;}
+      .iframe-wrap { min-height: 200px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Helios Web Portal</h1>
+    <form id="heliosForm" autocomplete="off">
+      <div class="bar-wrap">
+        <input type="text" id="searchInput" placeholder="Search or enter a URL (e.g. github.com, wikipedia.org, or any site)" autofocus>
+        <button type="submit">Go</button>
+      </div>
+    </form>
+    <div class="tip">
+      Type your query or paste a web address and press <b>Go</b>.<br>
+      <span style="opacity:0.8;font-size:0.96em;">If it's not a URL, it will search using DuckDuckGo.</span>
+    </div>
+    <div class="iframe-wrap" id="iframeWrap" style="display:none;">
+      <iframe id="webView" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
+    </div>
+  </div>
+  <script>
+    function isProbablyUrl(txt) {
+      // If starts with http(s)://, or www., or ends with a common TLD
+      return /^https?:\/\//i.test(txt) ||
+             /^www\./i.test(txt) ||
+             /\.[a-z]{2,6}(\/|$)/i.test(txt);
+    }
+    function formatUrl(txt) {
+      let str = txt.trim();
+      if (/^https?:\/\//i.test(str)) return str;
+      if (/^www\./i.test(str)) return "https://" + str;
+      if (/\.[a-z]{2,6}(\/|$)/i.test(str)) return "https://" + str;
+      return null;
+    }
+    document.getElementById("heliosForm").onsubmit = function(e) {
+      e.preventDefault();
+      const val = document.getElementById("searchInput").value.trim();
+      const iframe = document.getElementById("webView");
+      const wrap = document.getElementById("iframeWrap");
+      let url = formatUrl(val);
+      if (url) {
+        iframe.src = url;
+        wrap.style.display = "block";
+      } else {
+        // Use DuckDuckGo for search
+        iframe.src = "https://duckduckgo.com/?q=" + encodeURIComponent(val);
+        wrap.style.display = "block";
+      }
+    };
+  </script>
+</body>
+</html>
